@@ -15,6 +15,10 @@ class Robut::Plugin::D20
     def to_s
       @result.to_s
     end
+
+    def <=> other
+      @result - other.result
+    end
   end
 
   def usage
@@ -28,6 +32,7 @@ class Robut::Plugin::D20
       dice = match['count'].to_i.times.collect do
         Die.new(match['die'].to_i)
       end
+      dice.sort!
       total = dice.reduce(0) { |sum, die| sum + die.result }
       total += bonus
       reply "#{sender_nick} rolled #{match}: #{total} (#{dice.join(", ")})"
