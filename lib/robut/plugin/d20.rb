@@ -2,7 +2,7 @@
 class Robut::Plugin::D20
   include Robut::Plugin
 
-  DIE_PATTERN = /(?<count>[1-9]\d*)d(?<die>[1-9]\d*)(?<bonus>[+-][1-9]\d*)?[^d]/i
+  DIE_PATTERN = /(?<count>[1-9]\d*)d(?<die>[1-9]\d*)(?<bonus>[+-][1-9]\d*)?([^d]|$)/i
   DIE_CAP = 999
 
   class Die
