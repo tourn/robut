@@ -3,6 +3,7 @@ class Robut::Plugin::D20
   include Robut::Plugin
 
   DIE_PATTERN = /(?<count>[1-9]\d*)d(?<die>[1-9]\d*)((?<bonus>[+-][1-9]\d*))?/i
+  DIE_CAP = 999
 
   class Die
     attr_accessor :result
@@ -29,13 +30,20 @@ class Robut::Plugin::D20
     match = DIE_PATTERN.match(message)
     if match
       bonus = match['bonus'].to_i
-      dice = match['count'].to_i.times.collect do
-        Die.new(match['die'].to_i)
+      count = match['count'].to_i
+      die = match['die'].to_i
+
+      if count > DIE_CAP || die > DIE_CAP
+        reply "Nope."
+      else
+        dice = count.times.collect do
+          Die.new(die)
+        end
+        dice.sort!
+        total = dice.reduce(0) { |sum, die| sum + die.result }
+        total += bonus
+        reply "#{sender_nick} rolled #{match}: #{total} (#{dice.join(", ")})"
       end
-      dice.sort!
-      total = dice.reduce(0) { |sum, die| sum + die.result }
-      total += bonus
-      reply "#{sender_nick} rolled #{match}: #{total} (#{dice.join(", ")})"
     end
   end
 end
