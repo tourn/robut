@@ -43,6 +43,11 @@ class Robut::Plugin::D20Test < Test::Unit::TestCase
     @plugin.handle(Time.now, "John", "Cha Check: 1d20 and 1d4!")
     assert_match /1d20:.*\n.*1d4/, @plugin.reply_to.replies.first
   end
+
+  def test_multi_with_plus
+    @plugin.handle(Time.now, "John", "Cha Check: 1d20+1d4!")
+    assert_match /1d20:.*\n.*1d4/, @plugin.reply_to.replies.first
+  end
   
 
 end
