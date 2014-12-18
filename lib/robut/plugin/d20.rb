@@ -22,6 +22,38 @@ class Robut::Plugin::D20
     end
   end
 
+  class Roll
+    def initialize(match)
+      count = match[0].to_i
+      die = match[1].to_i
+      bonus = match[2].to_i
+
+      @string = "#{count}d#{die}"
+      @string += "+#{bonus}" if bonus > 0
+      @string += "#{bonus}" if bonus < 0
+      @string += ": "
+      if count > DIE_CAP || die > DIE_CAP
+        @string += "Nope"
+      else
+        dice = count.times.collect do
+          Die.new(die)
+        end
+        dice.sort!
+        @total = dice.reduce(0) { |sum, die| sum + die.result }
+        @total += bonus
+        @string += "#{@total} (#{dice.join(", ")})"
+      end
+    end
+
+    def to_s
+      @string
+    end
+
+    def to_i
+      @total
+    end
+  end
+
   def usage
     "NdX[+B] - rolls N dice of size X, optionally adds B as static bonus"
   end
@@ -29,35 +61,17 @@ class Robut::Plugin::D20
   def handle(time, sender_nick, message)
     match = message.scan(DIE_PATTERN)
     if match.size == 1
-      reply "#{sender_nick} rolled " + roll(match.first)
+      reply "#{sender_nick} rolled " + Roll.new(match.first).to_s
     elsif match.size > 1
       msg = "#{sender_nick} rolled: "
+      total = 0
       match.each do |m|
-        msg += "\n  #{roll(m)}"
+        r = Roll.new(m)
+        total += r.to_i
+        msg += "\n  #{r}"
       end
+      msg += "\n----\n#{total}"
       reply msg
-    end
-  end
-
-  def roll(match)
-    count = match[0].to_i
-    die = match[1].to_i
-    bonus = match[2].to_i
-
-    result = "#{count}d#{die}"
-    result += "+#{bonus}" if bonus > 0
-    result += "#{bonus}" if bonus < 0
-    result += ": "
-    if count > DIE_CAP || die > DIE_CAP
-      result += "Nope"
-    else
-      dice = count.times.collect do
-        Die.new(die)
-      end
-      dice.sort!
-      total = dice.reduce(0) { |sum, die| sum + die.result }
-      total += bonus
-      result += "#{total} (#{dice.join(", ")})"
     end
   end
 
