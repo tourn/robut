@@ -9,6 +9,11 @@ class Robut::Plugin::D20Test < Test::Unit::TestCase
     @plugin = Robut::Plugin::D20.new(@presence)
   end
 
+  def test_nothing
+    @plugin.handle(Time.now, "John", "I like brains.")
+    assert_equal [], @plugin.reply_to.replies
+  end
+
   def test_1d20
     @plugin.handle(Time.now, "John", "Dex Check: 1d20!")
     assert_match /1d20: \d+ \(\d+\)/, @plugin.reply_to.replies.first
@@ -26,12 +31,17 @@ class Robut::Plugin::D20Test < Test::Unit::TestCase
 
   def test_penalty
     @plugin.handle(Time.now, "John", "Wis Check: 1d20-4!")
-    assert_match /1d20-4: \d+/, @plugin.reply_to.replies.first
+    assert_match /1d20-4: -?\d+/, @plugin.reply_to.replies.first
   end
 
   def test_mention
     @plugin.handle(Time.now, "John", "Cha Check: 1d20!")
     assert_match /^John rolled 1d20: \d+/, @plugin.reply_to.replies.first
+  end
+
+  def test_multi
+    @plugin.handle(Time.now, "John", "Cha Check: 1d20 and 1d4!")
+    assert_match /1d20:.*\n.*1d4/, @plugin.reply_to.replies.first
   end
   
 
