@@ -11,17 +11,17 @@ class Robut::Plugin::D20Test < Test::Unit::TestCase
 
   def test_1d20
     @plugin.handle(Time.now, "John", "Dex Check: 1d20!")
-    assert_match /1d20: \d+/, @plugin.reply_to.replies.first
+    assert_match /1d20: \d+ \(\d+\)/, @plugin.reply_to.replies.first
   end
 
   def test_1d20_4
     @plugin.handle(Time.now, "John", "Int Check: 1d20+4!")
-    assert_match /1d20\+4: \d+/, @plugin.reply_to.replies.first
+    assert_match /1d20\+4: \d+ \(\d+\)/, @plugin.reply_to.replies.first
   end
 
   def test_20d20_44
-    @plugin.handle(Time.now, "John", "Str Check: 20d20+44!")
-    assert_match /20d20\+44: \d+/, @plugin.reply_to.replies.first
+    @plugin.handle(Time.now, "John", "Str Check: 3d20+44!")
+    assert_match /3d20\+44: \d+ \(\d+, \d+, \d+\)/, @plugin.reply_to.replies.first
   end
 
   def test_penalty
@@ -31,7 +31,7 @@ class Robut::Plugin::D20Test < Test::Unit::TestCase
 
   def test_mention
     @plugin.handle(Time.now, "John", "Cha Check: 1d20!")
-    assert_match /^@John 1d20: \d+/, @plugin.reply_to.replies.first
+    assert_match /^John rolled 1d20: \d+/, @plugin.reply_to.replies.first
   end
   
 
