@@ -23,6 +23,16 @@ class Robut::Plugin::D20Test < Test::Unit::TestCase
     @plugin.handle(Time.now, "John", "Str Check: 20d20+44!")
     assert_match /20d20\+44: \d+/, @plugin.reply_to.replies.first
   end
+
+  def test_penalty
+    @plugin.handle(Time.now, "John", "Wis Check: 1d20-4!")
+    assert_match /1d20-4: \d+/, @plugin.reply_to.replies.first
+  end
+
+  def test_mention
+    @plugin.handle(Time.now, "John", "Cha Check: 1d20!")
+    assert_match /^@John 1d20: \d+/, @plugin.reply_to.replies.first
+  end
   
 
 end
